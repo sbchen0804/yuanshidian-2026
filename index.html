@@ -270,15 +270,25 @@
       color: #fff;
     }
 
-    .mode-indicator {
-      font-size: 10.5px;
-      padding: 3px 8px;
-      border-radius: 4px;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      color: var(--accent-blue);
-      font-weight: 600;
+    .btn-header-carousel {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #fff;
+      font-size: 11px;
+      padding: 5px 9px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 700;
       white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+      transition: all 0.2s;
+    }
+    .btn-header-carousel:hover {
+      background: linear-gradient(135deg, #0369a1, #1d4ed8);
+      transform: translateY(-1px);
     }
 
     /* App Body - Desktop Layout */
@@ -824,7 +834,7 @@
     </div>
     <div class="header-actions">
       <button class="btn-guide-toggle" onclick="openCover()">📖 導覽說明</button>
-      <span class="mode-indicator" id="modeIndicator">🔄 全部輪播</span>
+      <button class="btn-header-carousel" onclick="startCarouselFromFirst()" id="topCarouselBtn">🔄 全部輪播播放</button>
     </div>
   </header>
 
@@ -833,7 +843,7 @@
     <!-- Playlist Sidebar -->
     <div class="sidebar">
       <div class="filter-bar" id="filterBar">
-        <div class="filter-chip chip-auto active" onclick="setMode('all', this)">🔄 全部 (15)</div>
+        <div class="filter-chip chip-auto active" id="chipAll" onclick="setMode('all', this)">🔄 全部 (15)</div>
         <div class="filter-chip" onclick="setMode('m1', this)">一、重大改良</div>
         <div class="filter-chip" onclick="setMode('m2', this)">二、點位架構</div>
         <div class="filter-chip" onclick="setMode('m3', this)">三、步法身法</div>
@@ -1260,11 +1270,9 @@
       activePlaylist = [fullEpisodeSegment];
       renderSegmentList(activePlaylist);
       
-      const indicator = document.getElementById('modeIndicator');
-      if (indicator) {
-        indicator.innerText = '🎬 完整全輯 (61分)';
-        indicator.style.color = '#c084fc';
-        indicator.style.borderColor = 'rgba(168, 85, 247, 0.5)';
+      const topBtn = document.getElementById('topCarouselBtn');
+      if (topBtn) {
+        topBtn.innerText = '🎬 全輯觀看中';
       }
 
       // 更新卡片與 UI
@@ -1361,35 +1369,45 @@
       }
     }
 
+    // 核心邏輯：無論先前停在哪一段，只要按「全部輪播」，100% 嚴格重置從第 1 集開始播放！
+    function startCarouselFromFirst() {
+      currentMode = 'all';
+      activePlaylist = [...segments];
+      renderSegmentList(activePlaylist);
+
+      // 高亮「全部 (15)」標籤
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      const chipAll = document.getElementById('chipAll');
+      if (chipAll) chipAll.classList.add('active');
+
+      const topBtn = document.getElementById('topCarouselBtn');
+      if (topBtn) {
+        topBtn.innerText = '🔄 輪播中 (從1起)';
+      }
+
+      // 嚴格 reset 回第 1 集 (segments[0])
+      currentSegment = segments[0];
+      selectSegment(segments[0], true);
+    }
+
     function setMode(modeKey, chipEl) {
       document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
       chipEl.classList.add('active');
 
-      const indicator = document.getElementById('modeIndicator');
+      const topBtn = document.getElementById('topCarouselBtn');
 
       if (modeKey === 'all') {
-        currentMode = 'all';
-        activePlaylist = [...segments];
-        renderSegmentList(activePlaylist);
-        indicator.innerText = '🔄 全部輪播';
-        indicator.style.color = 'var(--accent-blue)';
-        indicator.style.borderColor = 'rgba(56, 189, 248, 0.4)';
-
-        if (currentSegment && currentSegment.id !== 'full') {
-          selectSegment(currentSegment, true);
-        } else {
-          selectSegment(segments[0], true);
-        }
+        // 點選「全部 (15)」一律重新從第 1 集開始！
+        startCarouselFromFirst();
       } else if (modeKey === 'full') {
-        // 第六項：完整全輯觀看模式（調用專屬即刻播放函數）
         triggerFullEpisode();
       } else {
         currentMode = 'single';
         activePlaylist = segments.filter(s => s.module === modeKey);
         renderSegmentList(activePlaylist);
-        indicator.innerText = '🎯 單元自選';
-        indicator.style.color = 'var(--accent-gold)';
-        indicator.style.borderColor = 'rgba(245, 158, 11, 0.4)';
+        if (topBtn) {
+          topBtn.innerText = '🔄 全部輪播播放';
+        }
 
         if (activePlaylist.length > 0) {
           selectSegment(activePlaylist[0], true);
