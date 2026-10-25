@@ -18,6 +18,7 @@
       --accent-red: #ef4444;
       --accent-gold: #f59e0b;
       --accent-green: #10b981;
+      --accent-purple: #a855f7;
       --text-main: #f8fafc;
       --text-sub: #94a3b8;
       --border-color: #334155;
@@ -147,6 +148,17 @@
       background: linear-gradient(135deg, #0284c7, #2563eb);
       color: #fff;
       box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+    }
+
+    .filter-chip.chip-full {
+      border: 1px solid rgba(168, 85, 247, 0.5);
+      color: #d8b4fe;
+    }
+
+    .filter-chip.chip-full.active {
+      background: linear-gradient(135deg, #7e22ce, #9333ea);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
     }
 
     .segment-list {
@@ -394,7 +406,7 @@
     .btn-replay { background-color: #475569; }
     .btn-replay:hover { background-color: #64748b; }
 
-    /* Desktop Notes Card (Only on Desktop) */
+    /* Desktop Notes Card */
     .teaching-notes-card {
       background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
@@ -462,7 +474,7 @@
         overflow: visible;
       }
 
-      /* 1. Sticky Top Player */
+      /* Sticky Top Player: 保持固定不壓縮 */
       .player-area {
         order: 1;
         padding: 0;
@@ -500,7 +512,7 @@
         display: none !important;
       }
 
-      /* 2. Scrollable List */
+      /* Scrollable List */
       .sidebar {
         order: 2;
         width: 100%;
@@ -513,7 +525,7 @@
       .filter-bar {
         position: -webkit-sticky;
         position: sticky;
-        top: calc(56.25vw + 43px); /* Right under sticky player */
+        top: calc(56.25vw + 43px); /* 緊貼在固定播放列下方 */
         z-index: 40;
         background-color: #1e293b;
         padding: 8px 10px;
@@ -522,13 +534,13 @@
 
       .segment-list {
         overflow: visible;
-        padding: 8px 10px 60px;
+        padding: 8px 10px 100px; /* 給予底部足夠留白，避免底端元素被遮擋 */
         gap: 8px;
       }
 
       .segment-card {
         padding: 10px 12px;
-        scroll-margin-top: calc(56.25vw + 95px); /* Precise scroll offset for mobile */
+        scroll-margin-top: calc(56.25vw + 95px);
       }
     }
   </style>
@@ -552,13 +564,14 @@
   <div class="app-body">
     <!-- Playlist Sidebar -->
     <div class="sidebar">
-      <div class="filter-bar">
-        <div class="filter-chip chip-auto active" onclick="setMode('all', this)">🔄 全部自動輪播 (15)</div>
+      <div class="filter-bar" id="filterBar">
+        <div class="filter-chip chip-auto active" onclick="setMode('all', this)">🔄 全部 (15)</div>
         <div class="filter-chip" onclick="setMode('m1', this)">一、重大改良</div>
         <div class="filter-chip" onclick="setMode('m2', this)">二、點位架構</div>
         <div class="filter-chip" onclick="setMode('m3', this)">三、步法身法</div>
         <div class="filter-chip" onclick="setMode('m4', this)">四、三階慢動作</div>
         <div class="filter-chip" onclick="setMode('m5', this)">五、痛點診斷</div>
+        <div class="filter-chip chip-full" onclick="setMode('full', this)">🎬 六、完整全輯觀看 (61分)</div>
       </div>
 
       <div class="segment-list" id="segmentListContainer">
@@ -838,11 +851,29 @@
       }
     ];
 
+    // 全輯特別項目（從 0 秒播至影片結尾 3706 秒 / 1小時1分46秒）
+    const fullEpisodeSegment = {
+      id: 'full',
+      module: 'full',
+      moduleName: '六、完整課程全輯觀看',
+      title: '2026/06/28 張醫師線上課程全集 (背部+臀部手法改良現場教學)',
+      start: 0,
+      end: 3706,
+      timeLabel: '00:00:00 - 01:01:46',
+      desc: '完整收錄 2026/06/28 張醫師線上教學全程：從上背部第一點手法回歸勾法、力道深度掌控、到下臀部旋轉式手法完整示範與學員檢定。',
+      quote: '「全球愛好原始點的家人們大家好...今天和大家分享的是背部臀部手法改良與現場教學...」',
+      notes: [
+        '【上半場】：背部手法改良重點、第一點勾回感與下盤下沉身法。',
+        '【下半場】：臀部 V 字坐姿對應、手肘 90 度垂直校正、下臀延伸點劃圓旋轉與學員現場實測檢定。',
+        '【播放特性】：從頭到尾不間斷完整放映，隨時可暫停或拉動時間軸。'
+      ]
+    };
+
     let player = null;
     let currentSegment = null;
     let checkInterval = null;
-    let currentMode = 'all'; // 'all': 輪播模式, 'single': 單段定格模式
-    let activePlaylist = [...segments]; // 當前播放清單
+    let currentMode = 'all'; // 'all': 輪播模式, 'single': 單段定格, 'full': 全輯模式
+    let activePlaylist = [...segments];
     let isApiReady = false;
 
     function onYouTubeIframeAPIReady() {
@@ -876,7 +907,13 @@
       if (event.data === YT.PlayerState.PLAYING) {
         playPauseBtn.innerText = '❚❚ 暫停';
         statusDot.style.backgroundColor = 'var(--accent-green)';
-        document.getElementById('statusText').innerText = (currentMode === 'all') ? '全集輪播中' : '單段示範中';
+        if (currentMode === 'all') {
+          document.getElementById('statusText').innerText = '全集輪播中';
+        } else if (currentMode === 'full') {
+          document.getElementById('statusText').innerText = '全輯完整播放中';
+        } else {
+          document.getElementById('statusText').innerText = '單段示範中';
+        }
         startStopMonitor();
       } else if (event.data === YT.PlayerState.PAUSED) {
         playPauseBtn.innerText = '▶ 播放';
@@ -896,7 +933,8 @@
         const curr = player.getCurrentTime();
         updateTimeTracker(curr, currentSegment.end);
 
-        if (curr >= currentSegment.end) {
+        // 如果不是全輯模式，到達結尾秒數時自動停住
+        if (currentMode !== 'full' && curr >= currentSegment.end) {
           player.pauseVideo();
           clearInterval(checkInterval);
           handleSegmentEnd();
@@ -909,26 +947,39 @@
       statusDot.style.backgroundColor = 'var(--accent-red)';
 
       if (currentMode === 'all') {
-        // 全集輪播模式：自動切換下一個段落
-        document.getElementById('statusText').innerText = '本段結束，自動輪播下一重點...';
-        setTimeout(() => {
-          playNextInCarousel();
-        }, 1000);
+        const currentIndex = activePlaylist.findIndex(s => s.id === currentSegment.id);
+        if (currentIndex !== -1 && currentIndex + 1 < activePlaylist.length) {
+          // 還有下一段，自動接續
+          document.getElementById('statusText').innerText = '本段結束，自動輪播下一重點...';
+          setTimeout(() => {
+            selectSegment(activePlaylist[currentIndex + 1], true);
+          }, 1000);
+        } else {
+          // 全部 15 段播放完畢！執行重置回到最初畫面
+          resetToInitialViewAfterCompletion();
+        }
+      } else if (currentMode === 'full') {
+        document.getElementById('statusText').innerText = '🎉 全輯影片播放完畢！';
       } else {
-        // 單元分類模式：精準定格停止
         document.getElementById('statusText').innerText = '🎯 已精準定格停止';
       }
     }
 
-    function playNextInCarousel() {
-      if (!currentSegment) return;
-      const currentIndex = activePlaylist.findIndex(s => s.id === currentSegment.id);
-      if (currentIndex !== -1 && currentIndex + 1 < activePlaylist.length) {
-        const nextSeg = activePlaylist[currentIndex + 1];
-        selectSegment(nextSeg, true);
-      } else {
-        document.getElementById('statusText').innerText = '🎉 全部 15 段重點已輪播完畢！';
-      }
+    // 當輪播全部結束時：重置回到最頂部最初畫面
+    function resetToInitialViewAfterCompletion() {
+      document.getElementById('statusText').innerText = '🎉 15 段重點已全數輪播完成！已回到初始起點';
+      
+      // 平滑回到網頁最頂部
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // 重置回選取第 1 項，但不自動播放，畫面停留在乾淨初始狀態
+      setTimeout(() => {
+        selectSegment(segments[0], false);
+        if (player && player.seekTo) {
+          player.seekTo(segments[0].start, true);
+          player.pauseVideo();
+        }
+      }, 600);
     }
 
     function selectSegment(seg, autoPlay = true) {
@@ -940,7 +991,6 @@
         player.playVideo();
       }
 
-      // 自動平滑滾動：讓當前卡片在視野中央向上靠齊
       scrollCardIntoView(seg.id);
     }
 
@@ -949,16 +999,14 @@
       if (!activeCard) return;
 
       if (window.innerWidth <= 900) {
-        // 手機版：針對固定頂部計算平滑捲動距離
         const rect = activeCard.getBoundingClientRect();
-        const headerOffset = window.innerWidth * 0.5625 + 95; // 頂部 Sticky 播放器 + 標籤列高度
+        const headerOffset = window.innerWidth * 0.5625 + 95;
         const targetY = window.pageYOffset + rect.top - headerOffset;
         window.scrollTo({
           top: targetY,
           behavior: 'smooth'
         });
       } else {
-        // 桌機版：滾動左側清單容器
         activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
@@ -970,9 +1018,9 @@
         activeCard.classList.add('active');
       }
 
-      document.getElementById('currentTitle').innerText = `${seg.id}. ${seg.title}`;
+      const displayTitle = (seg.id === 'full') ? seg.title : `${seg.id}. ${seg.title}`;
+      document.getElementById('currentTitle').innerText = displayTitle;
       
-      // Update Desktop Notes (if visible on desktop)
       document.getElementById('notesHeaderTitle').innerText = `📌 ${seg.title}`;
       document.getElementById('notesModuleTag').innerText = seg.moduleName;
       document.getElementById('notesQuote').innerText = `💡 張醫師原音要領：${seg.quote}`;
@@ -987,8 +1035,12 @@
 
     function updateTimeTracker(curr, end) {
       const formatTime = (s) => {
-        const m = Math.floor(s / 60);
+        const h = Math.floor(s / 3600);
+        const m = Math.floor((s % 3600) / 60);
         const sec = Math.floor(s % 60);
+        if (h > 0) {
+          return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+        }
         return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
       };
       document.getElementById('timeTracker').innerText = `${formatTime(curr)} / ${formatTime(end)}`;
@@ -1011,7 +1063,6 @@
       }
     }
 
-    // 核心切換：區分「全部輪播」vs「單元單段定格」
     function setMode(modeKey, chipEl) {
       document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
       chipEl.classList.add('active');
@@ -1026,12 +1077,21 @@
         indicator.style.color = 'var(--accent-blue)';
         indicator.style.borderColor = 'rgba(56, 189, 248, 0.4)';
 
-        // 點選「全部(15)」即刻從第 1 段或當前段啟動輪播
-        if (currentSegment) {
+        if (currentSegment && currentSegment.id !== 'full') {
           selectSegment(currentSegment, true);
         } else {
           selectSegment(segments[0], true);
         }
+      } else if (modeKey === 'full') {
+        // 第六項：完整全輯觀看模式
+        currentMode = 'full';
+        activePlaylist = [fullEpisodeSegment];
+        renderSegmentList(activePlaylist);
+        indicator.innerText = '🎬 完整全輯觀看模式 (全程 61 分鐘)';
+        indicator.style.color = '#c084fc';
+        indicator.style.borderColor = 'rgba(168, 85, 247, 0.5)';
+
+        selectSegment(fullEpisodeSegment, true);
       } else {
         currentMode = 'single';
         activePlaylist = segments.filter(s => s.module === modeKey);
@@ -1040,7 +1100,6 @@
         indicator.style.color = 'var(--accent-gold)';
         indicator.style.borderColor = 'rgba(245, 158, 11, 0.4)';
 
-        // 切換至該單元第一個重點並單段定格播放
         if (activePlaylist.length > 0) {
           selectSegment(activePlaylist[0], true);
         }
@@ -1071,9 +1130,11 @@
           notesList += `<li>${item}</li>`;
         });
 
+        const numBadge = (seg.id === 'full') ? '★ 全輯' : `#${seg.id}`;
+
         card.innerHTML = `
           <div class="card-top">
-            <span class="card-num">#${seg.id}</span>
+            <span class="card-num">${numBadge}</span>
             <div class="card-title">${seg.title}</div>
             <span class="card-time">${seg.timeLabel}</span>
           </div>
