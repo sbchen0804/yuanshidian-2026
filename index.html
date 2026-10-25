@@ -11,8 +11,8 @@
     :root {
       --bg-main: #0b1120;
       --bg-panel: #1e293b;
-      --bg-card: #243044;
-      --bg-card-hover: #334155;
+      --bg-card: #1f2d42;
+      --bg-card-hover: #293b54;
       --accent-blue: #38bdf8;
       --accent-blue-hover: #0284c7;
       --accent-red: #ef4444;
@@ -74,12 +74,6 @@
       line-height: 1.3;
     }
 
-    .title-box p {
-      font-size: 11px;
-      color: var(--text-sub);
-      display: none;
-    }
-
     .header-actions {
       display: flex;
       align-items: center;
@@ -98,7 +92,7 @@
       transition: all 0.2s;
     }
 
-    /* Desktop Layout Container */
+    /* App Body - Desktop Layout */
     .app-body {
       display: flex;
       flex: 1;
@@ -106,7 +100,7 @@
       overflow: hidden;
     }
 
-    /* Left Sidebar */
+    /* Left Sidebar: Playlist */
     .sidebar {
       width: 440px;
       background-color: var(--bg-panel);
@@ -124,6 +118,7 @@
       gap: 6px;
       overflow-x: auto;
       scrollbar-width: none;
+      background-color: var(--bg-panel);
     }
     .filter-bar::-webkit-scrollbar { display: none; }
 
@@ -184,7 +179,7 @@
     }
 
     .segment-card.active {
-      background: linear-gradient(135deg, rgba(2, 132, 199, 0.4), rgba(30, 41, 59, 0.9));
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.35), rgba(30, 41, 59, 0.95));
       border: 1px solid var(--accent-blue);
       box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2);
     }
@@ -243,7 +238,31 @@
       line-height: 1.35;
     }
 
-    /* Right Player & Notes */
+    /* Embedded card notes (dynamically injected into active card) */
+    .card-expanded-notes {
+      display: none;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 11.5px;
+      color: #e2e8f0;
+      line-height: 1.5;
+    }
+
+    .card-expanded-notes ul {
+      margin-left: 16px;
+      margin-top: 4px;
+    }
+
+    .card-expanded-notes li {
+      margin-bottom: 3px;
+    }
+
+    .segment-card.active .card-expanded-notes {
+      display: block;
+    }
+
+    /* Right Player Area */
     .player-area {
       flex: 1;
       display: flex;
@@ -261,7 +280,7 @@
     .video-wrapper {
       position: relative;
       width: 100%;
-      padding-top: 56.25%; /* 16:9 */
+      padding-top: 56.25%; /* 16:9 Aspect Ratio */
       background-color: #000;
       border-radius: 10px;
       overflow: hidden;
@@ -278,37 +297,37 @@
       border: none;
     }
 
-    /* Status Bar */
+    /* Player Status Bar */
     .player-status-bar {
       background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 10px 14px;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 8px;
     }
 
     .status-left {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 1px;
       overflow: hidden;
     }
 
     .status-badge {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      font-size: 11px;
+      gap: 4px;
+      font-size: 10.5px;
       font-weight: 700;
       color: var(--accent-green);
     }
 
     .status-dot {
-      width: 7px;
-      height: 7px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background-color: var(--accent-green);
       animation: pulse 1.5s infinite;
@@ -321,7 +340,7 @@
     }
 
     .current-playing-title {
-      font-size: 13.5px;
+      font-size: 12.5px;
       font-weight: 700;
       color: var(--text-main);
       white-space: nowrap;
@@ -332,17 +351,17 @@
     .status-right {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       flex-shrink: 0;
     }
 
     .time-tracker {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--accent-blue);
       background: rgba(56, 189, 248, 0.1);
-      padding: 4px 8px;
-      border-radius: 5px;
+      padding: 3px 6px;
+      border-radius: 4px;
       border: 1px solid rgba(56, 189, 248, 0.2);
     }
 
@@ -350,9 +369,9 @@
       background-color: var(--accent-blue-hover);
       color: #fff;
       border: none;
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 600;
-      padding: 6px 12px;
+      padding: 5px 10px;
       border-radius: 5px;
       cursor: pointer;
       display: inline-flex;
@@ -365,7 +384,7 @@
     .btn-replay { background-color: #475569; }
     .btn-replay:hover { background-color: #64748b; }
 
-    /* Notes Card */
+    /* Desktop Notes Card (Only shown on Desktop) */
     .teaching-notes-card {
       background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
@@ -420,8 +439,11 @@
     }
 
     /* ==============================================================
-       MOBILE RESPONSIVE BREAKPOINT (Screen Width <= 900px)
-       手機直立最佳化排版：頂部影片固定 (Sticky) + 下方流暢滑動重點清單
+       手機直立最佳化排版 (螢幕寬度 <= 900px)
+       徹底解決：
+       1. 頂部只固定「簡潔的 YouTube 視窗 + 播放控制列」，高度精簡。
+       2. 手機版徹底「隱藏」佔據大半螢幕的重複文字框 (teaching-notes-card)！
+       3. 詳細說明自動收入每張可自然滾動的卡片中，所有 15 個段落皆可隨意上下滑動！
        ============================================================== */
     @media (max-width: 900px) {
       body {
@@ -429,11 +451,7 @@
         height: auto;
       }
 
-      .title-box p {
-        display: none;
-      }
-
-      /* Stack vertically */
+      /* Stack: 頂部播放器 -> 下方手法清單 */
       .app-body {
         display: flex;
         flex-direction: column;
@@ -441,7 +459,7 @@
         overflow: visible;
       }
 
-      /* 1. Make Player Area First & Sticky at top */
+      /* 1. 頂部 Sticky 只固定純影片與播放列，高僅約 56vw + 40px，釋放 70% 螢幕給下方滑動 */
       .player-area {
         order: 1;
         padding: 0;
@@ -451,7 +469,7 @@
         position: sticky;
         top: 0;
         z-index: 100;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
       }
 
       .video-wrapper {
@@ -465,33 +483,22 @@
         border-radius: 0;
         border-left: none;
         border-right: none;
-        padding: 8px 12px;
-        background-color: #131d31;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 6px 10px;
+        background-color: #0f172a;
       }
 
       .current-playing-title {
-        font-size: 12.5px;
-        max-width: 180px;
+        max-width: 160px;
+        font-size: 11.5px;
       }
 
-      .btn-action {
-        padding: 5px 8px;
-        font-size: 11px;
-      }
-
-      .time-tracker {
-        font-size: 11px;
-        padding: 3px 6px;
-      }
-
-      /* Hide Desktop Notes card under player in mobile, moved inside active segment or list */
+      /* 手機上隱藏這個佔掉大半個畫面的文字大框！讓出完整視野給下方列表 */
       .teaching-notes-card {
-        margin: 10px 12px 6px;
-        border-radius: 8px;
-        padding: 12px;
+        display: none !important;
       }
 
-      /* 2. Make Sidebar Second (Natural scrollable list) */
+      /* 2. 下方手法清單自由向上滑動，完整展開 */
       .sidebar {
         order: 2;
         width: 100%;
@@ -504,37 +511,33 @@
       .filter-bar {
         position: -webkit-sticky;
         position: sticky;
-        top: calc(56.25vw + 49px); /* Below sticky video + status bar */
+        top: calc(56.25vw + 43px); /* 剛好接在 Sticky 播放列下方 */
         z-index: 40;
-        background-color: var(--bg-panel);
-        padding: 8px 12px;
+        background-color: #1e293b;
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--border-color);
       }
 
       .segment-list {
         overflow: visible;
-        padding: 10px 12px 30px;
+        padding: 8px 10px 40px;
+        gap: 8px;
       }
 
       .segment-card {
-        padding: 12px;
-        margin-bottom: 4px;
-      }
-
-      .card-title {
-        font-size: 13.5px;
+        padding: 10px 12px;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Top Header -->
   <header>
     <div class="brand">
       <span class="badge-tag">2026 改良</span>
       <div class="title-box">
         <h1>張醫師臀部手法改良教學</h1>
-        <p>點選即播 | 播完定格停止 | 手機直式自適應</p>
       </div>
     </div>
     <div class="header-actions">
@@ -544,10 +547,10 @@
 
   <!-- App Body -->
   <div class="app-body">
-    <!-- Left / Bottom on Mobile: Playlist Sidebar -->
+    <!-- Playlist Sidebar (Mobile: Scrollable Bottom) -->
     <div class="sidebar">
       <div class="filter-bar">
-        <div class="filter-chip active" onclick="filterSegments('all', this)">全部重點 (15)</div>
+        <div class="filter-chip active" onclick="filterSegments('all', this)">全部 (15)</div>
         <div class="filter-chip" onclick="filterSegments('m1', this)">一、重大改良</div>
         <div class="filter-chip" onclick="filterSegments('m2', this)">二、點位架構</div>
         <div class="filter-chip" onclick="filterSegments('m3', this)">三、步法身法</div>
@@ -560,9 +563,8 @@
       </div>
     </div>
 
-    <!-- Right / Top on Mobile: Sticky Player & Teaching Notes -->
+    <!-- Player Area (Mobile: Compact Sticky Top) -->
     <div class="player-area">
-      <!-- YouTube Embed IFrame Wrapper -->
       <div class="video-sticky-container">
         <div class="video-wrapper">
           <div id="player"></div>
@@ -573,9 +575,9 @@
           <div class="status-left">
             <div class="status-badge">
               <span class="status-dot" id="statusDot"></span>
-              <span id="statusText">已就緒</span>
+              <span id="statusText">就緒</span>
             </div>
-            <div class="current-playing-title" id="currentTitle">請點選下方重點段落開始播放</div>
+            <div class="current-playing-title" id="currentTitle">請點選下方手法段落</div>
           </div>
 
           <div class="status-right">
@@ -586,7 +588,7 @@
         </div>
       </div>
 
-      <!-- Detail Teaching Keynotes -->
+      <!-- Desktop-Only Detailed Keynotes Card (Hidden on Mobile) -->
       <div class="teaching-notes-card" id="notesCard">
         <div class="notes-header">
           <h3 id="notesHeaderTitle">📌 本段核心操作要點解析</h3>
@@ -917,11 +919,6 @@
       if (autoPlay && player && player.seekTo) {
         player.seekTo(seg.start, true);
         player.playVideo();
-        
-        // On mobile, scroll smoothly to the sticky player so user sees it start playing
-        if (window.innerWidth <= 900) {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
       }
     }
 
@@ -933,6 +930,8 @@
       }
 
       document.getElementById('currentTitle').innerText = `${seg.id}. ${seg.title}`;
+      
+      // Update Desktop Notes (if visible on desktop)
       document.getElementById('notesHeaderTitle').innerText = `📌 ${seg.title}`;
       document.getElementById('notesModuleTag').innerText = seg.moduleName;
       document.getElementById('notesQuote').innerText = `💡 張醫師原音要領：${seg.quote}`;
@@ -1010,6 +1009,12 @@
         card.id = `seg-card-${seg.id}`;
         card.onclick = () => selectSegment(seg, true);
 
+        // Build bullet items
+        let notesList = '';
+        seg.notes.forEach(item => {
+          notesList += `<li>${item}</li>`;
+        });
+
         card.innerHTML = `
           <div class="card-top">
             <span class="card-num">#${seg.id}</span>
@@ -1018,6 +1023,10 @@
           </div>
           <div class="card-desc">${seg.desc}</div>
           <div class="card-quote">${seg.quote}</div>
+          <div class="card-expanded-notes">
+            <div style="font-weight:700; color:var(--accent-blue); margin-bottom:3px;">📌 核心動作要領：</div>
+            <ul>${notesList}</ul>
+          </div>
         `;
 
         container.appendChild(card);
