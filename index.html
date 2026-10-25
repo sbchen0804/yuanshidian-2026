@@ -80,16 +80,15 @@
       gap: 8px;
     }
 
-    .btn-toggle-auto {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--border-color);
-      color: var(--text-sub);
+    .mode-indicator {
       font-size: 11px;
-      padding: 5px 10px;
-      border-radius: 6px;
-      cursor: pointer;
+      padding: 4px 9px;
+      border-radius: 5px;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--accent-blue);
+      font-weight: 600;
       white-space: nowrap;
-      transition: all 0.2s;
     }
 
     /* App Body - Desktop Layout */
@@ -126,7 +125,7 @@
       background: var(--bg-card);
       color: var(--text-sub);
       font-size: 12px;
-      padding: 5px 12px;
+      padding: 6px 13px;
       border-radius: 20px;
       cursor: pointer;
       white-space: nowrap;
@@ -140,6 +139,16 @@
       border-color: var(--accent-blue);
     }
 
+    .filter-chip.chip-auto {
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+
+    .filter-chip.chip-auto.active {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+    }
+
     .segment-list {
       flex: 1;
       overflow-y: auto;
@@ -147,6 +156,7 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+      scroll-behavior: smooth;
     }
 
     .segment-list::-webkit-scrollbar { width: 5px; }
@@ -170,7 +180,8 @@
       border-radius: 8px;
       padding: 10px 12px;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.2s ease;
+      scroll-margin-top: 10px;
     }
 
     .segment-card:hover {
@@ -180,8 +191,8 @@
 
     .segment-card.active {
       background: linear-gradient(135deg, rgba(2, 132, 199, 0.35), rgba(30, 41, 59, 0.95));
-      border: 1px solid var(--accent-blue);
-      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2);
+      border: 1.5px solid var(--accent-blue);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
     }
 
     .card-top {
@@ -238,7 +249,6 @@
       line-height: 1.35;
     }
 
-    /* Embedded card notes (dynamically injected into active card) */
     .card-expanded-notes {
       display: none;
       margin-top: 8px;
@@ -384,7 +394,7 @@
     .btn-replay { background-color: #475569; }
     .btn-replay:hover { background-color: #64748b; }
 
-    /* Desktop Notes Card (Only shown on Desktop) */
+    /* Desktop Notes Card (Only on Desktop) */
     .teaching-notes-card {
       background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
@@ -438,20 +448,13 @@
       line-height: 1.4;
     }
 
-    /* ==============================================================
-       手機直立最佳化排版 (螢幕寬度 <= 900px)
-       徹底解決：
-       1. 頂部只固定「簡潔的 YouTube 視窗 + 播放控制列」，高度精簡。
-       2. 手機版徹底「隱藏」佔據大半螢幕的重複文字框 (teaching-notes-card)！
-       3. 詳細說明自動收入每張可自然滾動的卡片中，所有 15 個段落皆可隨意上下滑動！
-       ============================================================== */
+    /* Mobile Responsive Breakpoint (<= 900px) */
     @media (max-width: 900px) {
       body {
         overflow-y: auto;
         height: auto;
       }
 
-      /* Stack: 頂部播放器 -> 下方手法清單 */
       .app-body {
         display: flex;
         flex-direction: column;
@@ -459,7 +462,7 @@
         overflow: visible;
       }
 
-      /* 1. 頂部 Sticky 只固定純影片與播放列，高僅約 56vw + 40px，釋放 70% 螢幕給下方滑動 */
+      /* 1. Sticky Top Player */
       .player-area {
         order: 1;
         padding: 0;
@@ -493,12 +496,11 @@
         font-size: 11.5px;
       }
 
-      /* 手機上隱藏這個佔掉大半個畫面的文字大框！讓出完整視野給下方列表 */
       .teaching-notes-card {
         display: none !important;
       }
 
-      /* 2. 下方手法清單自由向上滑動，完整展開 */
+      /* 2. Scrollable List */
       .sidebar {
         order: 2;
         width: 100%;
@@ -511,7 +513,7 @@
       .filter-bar {
         position: -webkit-sticky;
         position: sticky;
-        top: calc(56.25vw + 43px); /* 剛好接在 Sticky 播放列下方 */
+        top: calc(56.25vw + 43px); /* Right under sticky player */
         z-index: 40;
         background-color: #1e293b;
         padding: 8px 10px;
@@ -520,12 +522,13 @@
 
       .segment-list {
         overflow: visible;
-        padding: 8px 10px 40px;
+        padding: 8px 10px 60px;
         gap: 8px;
       }
 
       .segment-card {
         padding: 10px 12px;
+        scroll-margin-top: calc(56.25vw + 95px); /* Precise scroll offset for mobile */
       }
     }
   </style>
@@ -541,21 +544,21 @@
       </div>
     </div>
     <div class="header-actions">
-      <button class="btn-toggle-auto" onclick="toggleAutoNext()">⚡ 自動連續：<span id="autoNextLabel">關閉</span></button>
+      <span class="mode-indicator" id="modeIndicator">🔄 全部輪播模式</span>
     </div>
   </header>
 
   <!-- App Body -->
   <div class="app-body">
-    <!-- Playlist Sidebar (Mobile: Scrollable Bottom) -->
+    <!-- Playlist Sidebar -->
     <div class="sidebar">
       <div class="filter-bar">
-        <div class="filter-chip active" onclick="filterSegments('all', this)">全部 (15)</div>
-        <div class="filter-chip" onclick="filterSegments('m1', this)">一、重大改良</div>
-        <div class="filter-chip" onclick="filterSegments('m2', this)">二、點位架構</div>
-        <div class="filter-chip" onclick="filterSegments('m3', this)">三、步法身法</div>
-        <div class="filter-chip" onclick="filterSegments('m4', this)">四、三階慢動作</div>
-        <div class="filter-chip" onclick="filterSegments('m5', this)">五、痛點診斷</div>
+        <div class="filter-chip chip-auto active" onclick="setMode('all', this)">🔄 全部自動輪播 (15)</div>
+        <div class="filter-chip" onclick="setMode('m1', this)">一、重大改良</div>
+        <div class="filter-chip" onclick="setMode('m2', this)">二、點位架構</div>
+        <div class="filter-chip" onclick="setMode('m3', this)">三、步法身法</div>
+        <div class="filter-chip" onclick="setMode('m4', this)">四、三階慢動作</div>
+        <div class="filter-chip" onclick="setMode('m5', this)">五、痛點診斷</div>
       </div>
 
       <div class="segment-list" id="segmentListContainer">
@@ -563,7 +566,7 @@
       </div>
     </div>
 
-    <!-- Player Area (Mobile: Compact Sticky Top) -->
+    <!-- Player Area -->
     <div class="player-area">
       <div class="video-sticky-container">
         <div class="video-wrapper">
@@ -588,7 +591,7 @@
         </div>
       </div>
 
-      <!-- Desktop-Only Detailed Keynotes Card (Hidden on Mobile) -->
+      <!-- Desktop-Only Detailed Keynotes Card -->
       <div class="teaching-notes-card" id="notesCard">
         <div class="notes-header">
           <h3 id="notesHeaderTitle">📌 本段核心操作要點解析</h3>
@@ -838,7 +841,8 @@
     let player = null;
     let currentSegment = null;
     let checkInterval = null;
-    let autoNext = false;
+    let currentMode = 'all'; // 'all': 輪播模式, 'single': 單段定格模式
+    let activePlaylist = [...segments]; // 當前播放清單
     let isApiReady = false;
 
     function onYouTubeIframeAPIReady() {
@@ -872,7 +876,7 @@
       if (event.data === YT.PlayerState.PLAYING) {
         playPauseBtn.innerText = '❚❚ 暫停';
         statusDot.style.backgroundColor = 'var(--accent-green)';
-        document.getElementById('statusText').innerText = '播放中';
+        document.getElementById('statusText').innerText = (currentMode === 'all') ? '全集輪播中' : '單段示範中';
         startStopMonitor();
       } else if (event.data === YT.PlayerState.PAUSED) {
         playPauseBtn.innerText = '▶ 播放';
@@ -881,7 +885,7 @@
         clearInterval(checkInterval);
       } else if (event.data === YT.PlayerState.ENDED) {
         clearInterval(checkInterval);
-        onSegmentEnded();
+        handleSegmentEnd();
       }
     }
 
@@ -895,20 +899,35 @@
         if (curr >= currentSegment.end) {
           player.pauseVideo();
           clearInterval(checkInterval);
-          onSegmentEnded();
+          handleSegmentEnd();
         }
       }, 200);
     }
 
-    function onSegmentEnded() {
+    function handleSegmentEnd() {
       const statusDot = document.getElementById('statusDot');
       statusDot.style.backgroundColor = 'var(--accent-red)';
-      
-      if (autoNext) {
-        document.getElementById('statusText').innerText = '即將播下一段...';
-        setTimeout(() => { playNextSegment(); }, 1200);
+
+      if (currentMode === 'all') {
+        // 全集輪播模式：自動切換下一個段落
+        document.getElementById('statusText').innerText = '本段結束，自動輪播下一重點...';
+        setTimeout(() => {
+          playNextInCarousel();
+        }, 1000);
       } else {
-        document.getElementById('statusText').innerText = '🎯 已定格停止';
+        // 單元分類模式：精準定格停止
+        document.getElementById('statusText').innerText = '🎯 已精準定格停止';
+      }
+    }
+
+    function playNextInCarousel() {
+      if (!currentSegment) return;
+      const currentIndex = activePlaylist.findIndex(s => s.id === currentSegment.id);
+      if (currentIndex !== -1 && currentIndex + 1 < activePlaylist.length) {
+        const nextSeg = activePlaylist[currentIndex + 1];
+        selectSegment(nextSeg, true);
+      } else {
+        document.getElementById('statusText').innerText = '🎉 全部 15 段重點已輪播完畢！';
       }
     }
 
@@ -919,6 +938,28 @@
       if (autoPlay && player && player.seekTo) {
         player.seekTo(seg.start, true);
         player.playVideo();
+      }
+
+      // 自動平滑滾動：讓當前卡片在視野中央向上靠齊
+      scrollCardIntoView(seg.id);
+    }
+
+    function scrollCardIntoView(segId) {
+      const activeCard = document.getElementById(`seg-card-${segId}`);
+      if (!activeCard) return;
+
+      if (window.innerWidth <= 900) {
+        // 手機版：針對固定頂部計算平滑捲動距離
+        const rect = activeCard.getBoundingClientRect();
+        const headerOffset = window.innerWidth * 0.5625 + 95; // 頂部 Sticky 播放器 + 標籤列高度
+        const targetY = window.pageYOffset + rect.top - headerOffset;
+        window.scrollTo({
+          top: targetY,
+          behavior: 'smooth'
+        });
+      } else {
+        // 桌機版：滾動左側清單容器
+        activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
 
@@ -970,23 +1011,39 @@
       }
     }
 
-    function toggleAutoNext() {
-      autoNext = !autoNext;
-      const lbl = document.getElementById('autoNextLabel');
-      if (autoNext) {
-        lbl.innerText = '開啟';
-        lbl.style.color = 'var(--accent-green)';
-      } else {
-        lbl.innerText = '關閉';
-        lbl.style.color = 'var(--accent-gold)';
-      }
-    }
+    // 核心切換：區分「全部輪播」vs「單元單段定格」
+    function setMode(modeKey, chipEl) {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chipEl.classList.add('active');
 
-    function playNextSegment() {
-      if (!currentSegment) return;
-      const idx = segments.findIndex(s => s.id === currentSegment.id);
-      if (idx !== -1 && idx + 1 < segments.length) {
-        selectSegment(segments[idx + 1], true);
+      const indicator = document.getElementById('modeIndicator');
+
+      if (modeKey === 'all') {
+        currentMode = 'all';
+        activePlaylist = [...segments];
+        renderSegmentList(activePlaylist);
+        indicator.innerText = '🔄 全部輪播模式 (段落連續+自動捲動)';
+        indicator.style.color = 'var(--accent-blue)';
+        indicator.style.borderColor = 'rgba(56, 189, 248, 0.4)';
+
+        // 點選「全部(15)」即刻從第 1 段或當前段啟動輪播
+        if (currentSegment) {
+          selectSegment(currentSegment, true);
+        } else {
+          selectSegment(segments[0], true);
+        }
+      } else {
+        currentMode = 'single';
+        activePlaylist = segments.filter(s => s.module === modeKey);
+        renderSegmentList(activePlaylist);
+        indicator.innerText = '🎯 單元自選模式 (播完單段定格停止)';
+        indicator.style.color = 'var(--accent-gold)';
+        indicator.style.borderColor = 'rgba(245, 158, 11, 0.4)';
+
+        // 切換至該單元第一個重點並單段定格播放
+        if (activePlaylist.length > 0) {
+          selectSegment(activePlaylist[0], true);
+        }
       }
     }
 
@@ -1009,7 +1066,6 @@
         card.id = `seg-card-${seg.id}`;
         card.onclick = () => selectSegment(seg, true);
 
-        // Build bullet items
         let notesList = '';
         seg.notes.forEach(item => {
           notesList += `<li>${item}</li>`;
@@ -1031,23 +1087,6 @@
 
         container.appendChild(card);
       });
-    }
-
-    function filterSegments(modKey, chipEl) {
-      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-      chipEl.classList.add('active');
-
-      if (modKey === 'all') {
-        renderSegmentList(segments);
-      } else {
-        const filtered = segments.filter(s => s.module === modKey);
-        renderSegmentList(filtered);
-      }
-
-      if (currentSegment) {
-        const c = document.getElementById(`seg-card-${currentSegment.id}`);
-        if (c) c.classList.add('active');
-      }
     }
   </script>
 </body>
