@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>2026年張醫師原始點臀部按推手法改良 — 互動教學播放器</title>
+  <title>2026年張醫師原始點臀部按推手法改良 — 互動教學研習平台</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -38,6 +38,151 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      position: relative;
+    }
+
+    /* ==============================================================
+       COVER PAGE MODAL (方案 C 全螢幕引導遮罩)
+       ============================================================== */
+    .cover-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(11, 17, 32, 0.94);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      opacity: 1;
+      visibility: visible;
+      overflow-y: auto;
+    }
+
+    .cover-overlay.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .cover-card {
+      background: linear-gradient(145deg, #1e293b, #111d33);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(2, 132, 199, 0.15);
+      border-radius: 16px;
+      max-width: 620px;
+      width: 100%;
+      padding: 28px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: relative;
+    }
+
+    .cover-badge {
+      align-self: flex-start;
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .cover-header h2 {
+      font-size: 21px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.35;
+      margin-top: 6px;
+    }
+
+    .cover-header h3 {
+      font-size: 14px;
+      color: var(--accent-blue);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    .cover-desc {
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.65;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 12px 14px;
+      border-radius: 8px;
+      border-left: 3px solid var(--accent-blue);
+    }
+
+    .guide-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .guide-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .guide-item {
+      display: flex;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .guide-icon {
+      font-size: 18px;
+      line-height: 1;
+      padding-top: 2px;
+    }
+
+    .guide-text h4 {
+      font-size: 13.5px;
+      color: var(--text-main);
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .guide-text p {
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    .btn-enter-app {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.4);
+      transition: all 0.2s;
+    }
+
+    .btn-enter-app:hover {
+      background: linear-gradient(135deg, #0369a1, #1d4ed8);
+      transform: translateY(-1px);
     }
 
     /* Top Nav */
@@ -79,6 +224,23 @@
       display: flex;
       align-items: center;
       gap: 8px;
+    }
+
+    .btn-guide-toggle {
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: var(--accent-blue);
+      font-size: 11.5px;
+      padding: 5px 11px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .btn-guide-toggle:hover {
+      background: rgba(56, 189, 248, 0.25);
+      color: #fff;
     }
 
     .mode-indicator {
@@ -474,7 +636,6 @@
         overflow: visible;
       }
 
-      /* Sticky Top Player: 保持固定不壓縮 */
       .player-area {
         order: 1;
         padding: 0;
@@ -512,7 +673,6 @@
         display: none !important;
       }
 
-      /* Scrollable List */
       .sidebar {
         order: 2;
         width: 100%;
@@ -525,7 +685,7 @@
       .filter-bar {
         position: -webkit-sticky;
         position: sticky;
-        top: calc(56.25vw + 43px); /* 緊貼在固定播放列下方 */
+        top: calc(56.25vw + 43px);
         z-index: 40;
         background-color: #1e293b;
         padding: 8px 10px;
@@ -534,7 +694,7 @@
 
       .segment-list {
         overflow: visible;
-        padding: 8px 10px 100px; /* 給予底部足夠留白，避免底端元素被遮擋 */
+        padding: 8px 10px 100px;
         gap: 8px;
       }
 
@@ -547,6 +707,65 @@
 </head>
 <body>
 
+  <!-- ==============================================================
+       COVER PAGE MODAL (方案 C 全螢幕引導首頁遮罩)
+       ============================================================== -->
+  <div class="cover-overlay" id="coverOverlay">
+    <div class="cover-card">
+      <span class="cover-badge">2026 最新手法研習教材</span>
+      <div class="cover-header">
+        <h2>2026 張醫師原始點臀部按推手法改良</h2>
+        <h3>線上互動研習平台與操作指南</h3>
+      </div>
+
+      <div class="cover-desc">
+        本研習教材取材自張醫師 <strong>2026/06/28 線上課程</strong>（主題：背部臀部手法改良與現場教學）。我們特別針對臀部核心手法、手肘 90 度垂直校正、身手放鬆下盤下沉，以及最新<strong>「下臀 V 字延伸點轉圈旋轉手法」</strong>提煉為直覺式互動研習工具。
+      </div>
+
+      <div class="guide-title">
+        <span>💡</span> 學習模式與功能指引
+      </div>
+
+      <div class="guide-grid">
+        <div class="guide-item">
+          <div class="guide-icon">🎯</div>
+          <div class="guide-text">
+            <h4>1. 五大模組重點整理</h4>
+            <p>將繁複臨床經驗梳理為「重大改良、點位架構、步法身法、三階慢動作、痛點診斷」五大主題分類。</p>
+          </div>
+        </div>
+
+        <div class="guide-item">
+          <div class="guide-icon">🔄</div>
+          <div class="guide-text">
+            <h4>2. 全集自動輪播 (15)</h4>
+            <p>點選「全部 (15)」，系統將自動接續播放所有精選技術片段，底下的操作要領與金句會<strong>同步向上滾動置中</strong>。</p>
+          </div>
+        </div>
+
+        <div class="guide-item">
+          <div class="guide-icon">👆</div>
+          <div class="guide-text">
+            <h4>3. 單段自主學習 (播完定格)</h4>
+            <p>點擊任一手法的單元卡片，立即播放該指定技術秒數，<strong>播完精確定格停止</strong>，方便對照身法深入研究。</p>
+          </div>
+        </div>
+
+        <div class="guide-item">
+          <div class="guide-icon">🎬</div>
+          <div class="guide-text">
+            <h4>4. 完整全輯觀看 (61 分鐘)</h4>
+            <p>點選最右側紫色標籤「六、完整全輯觀看」，即可從頭到尾不間斷播放張醫師完整 61 分鐘線上教學。</p>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-enter-app" onclick="closeCover()">
+        進入互動研習平台 ➔
+      </button>
+    </div>
+  </div>
+
   <!-- Top Header -->
   <header>
     <div class="brand">
@@ -556,6 +775,7 @@
       </div>
     </div>
     <div class="header-actions">
+      <button class="btn-guide-toggle" onclick="openCover()">📖 導覽說明</button>
       <span class="mode-indicator" id="modeIndicator">🔄 全部輪播模式</span>
     </div>
   </header>
@@ -851,7 +1071,6 @@
       }
     ];
 
-    // 全輯特別項目（從 0 秒播至影片結尾 3706 秒 / 1小時1分46秒）
     const fullEpisodeSegment = {
       id: 'full',
       module: 'full',
@@ -872,9 +1091,20 @@
     let player = null;
     let currentSegment = null;
     let checkInterval = null;
-    let currentMode = 'all'; // 'all': 輪播模式, 'single': 單段定格, 'full': 全輯模式
+    let currentMode = 'all';
     let activePlaylist = [...segments];
     let isApiReady = false;
+
+    // Cover Page Controls
+    function closeCover() {
+      const cover = document.getElementById('coverOverlay');
+      cover.classList.add('hide');
+    }
+
+    function openCover() {
+      const cover = document.getElementById('coverOverlay');
+      cover.classList.remove('hide');
+    }
 
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('player', {
@@ -933,7 +1163,6 @@
         const curr = player.getCurrentTime();
         updateTimeTracker(curr, currentSegment.end);
 
-        // 如果不是全輯模式，到達結尾秒數時自動停住
         if (currentMode !== 'full' && curr >= currentSegment.end) {
           player.pauseVideo();
           clearInterval(checkInterval);
@@ -949,13 +1178,11 @@
       if (currentMode === 'all') {
         const currentIndex = activePlaylist.findIndex(s => s.id === currentSegment.id);
         if (currentIndex !== -1 && currentIndex + 1 < activePlaylist.length) {
-          // 還有下一段，自動接續
           document.getElementById('statusText').innerText = '本段結束，自動輪播下一重點...';
           setTimeout(() => {
             selectSegment(activePlaylist[currentIndex + 1], true);
           }, 1000);
         } else {
-          // 全部 15 段播放完畢！執行重置回到最初畫面
           resetToInitialViewAfterCompletion();
         }
       } else if (currentMode === 'full') {
@@ -965,14 +1192,10 @@
       }
     }
 
-    // 當輪播全部結束時：重置回到最頂部最初畫面
     function resetToInitialViewAfterCompletion() {
       document.getElementById('statusText').innerText = '🎉 15 段重點已全數輪播完成！已回到初始起點';
-      
-      // 平滑回到網頁最頂部
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      // 重置回選取第 1 項，但不自動播放，畫面停留在乾淨初始狀態
       setTimeout(() => {
         selectSegment(segments[0], false);
         if (player && player.seekTo) {
@@ -1083,7 +1306,6 @@
           selectSegment(segments[0], true);
         }
       } else if (modeKey === 'full') {
-        // 第六項：完整全輯觀看模式
         currentMode = 'full';
         activePlaylist = [fullEpisodeSegment];
         renderSegmentList(activePlaylist);
