@@ -2,17 +2,17 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>2026年張醫師原始點臀部按推手法改良 — 互動教學播放器</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-main: #0f172a;
+      --bg-main: #0b1120;
       --bg-panel: #1e293b;
-      --bg-card: #334155;
-      --bg-card-hover: #3b4d66;
+      --bg-card: #243044;
+      --bg-card-hover: #334155;
       --accent-blue: #38bdf8;
       --accent-blue-hover: #0284c7;
       --accent-red: #ef4444;
@@ -20,41 +20,41 @@
       --accent-green: #10b981;
       --text-main: #f8fafc;
       --text-sub: #94a3b8;
-      --text-muted: #64748b;
-      --border-color: #475569;
+      --border-color: #334155;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
       font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-main);
       color: var(--text-main);
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
     }
 
     /* Top Nav */
     header {
       background-color: var(--bg-panel);
       border-bottom: 1px solid var(--border-color);
-      padding: 12px 24px;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-shrink: 0;
+      z-index: 50;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .badge-tag {
@@ -62,69 +62,70 @@
       color: #fff;
       font-size: 11px;
       font-weight: 700;
-      padding: 3px 8px;
+      padding: 3px 7px;
       border-radius: 4px;
-      letter-spacing: 0.5px;
+      white-space: nowrap;
     }
 
     .title-box h1 {
-      font-size: 17px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--text-main);
+      line-height: 1.3;
     }
 
     .title-box p {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-sub);
+      display: none;
     }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
-    .btn-help {
+    .btn-toggle-auto {
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--border-color);
       color: var(--text-sub);
-      font-size: 12px;
-      padding: 6px 14px;
+      font-size: 11px;
+      padding: 5px 10px;
       border-radius: 6px;
       cursor: pointer;
+      white-space: nowrap;
       transition: all 0.2s;
     }
 
-    .btn-help:hover {
-      background: rgba(255, 255, 255, 0.15);
-      color: var(--text-main);
-    }
-
-    /* Main Container */
+    /* Desktop Layout Container */
     .app-body {
       display: flex;
       flex: 1;
-      height: calc(100vh - 65px);
+      height: calc(100vh - 58px);
       overflow: hidden;
     }
 
-    /* Left Sidebar: Segment Playlist */
+    /* Left Sidebar */
     .sidebar {
-      width: 460px;
+      width: 440px;
       background-color: var(--bg-panel);
       border-right: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
+      height: 100%;
     }
 
     .filter-bar {
-      padding: 14px 18px 8px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       display: flex;
-      gap: 8px;
+      gap: 6px;
       overflow-x: auto;
+      scrollbar-width: none;
     }
+    .filter-bar::-webkit-scrollbar { display: none; }
 
     .filter-chip {
       background: var(--bg-card);
@@ -135,7 +136,7 @@
       cursor: pointer;
       white-space: nowrap;
       border: 1px solid transparent;
-      transition: all 0.2s;
+      transition: all 0.15s;
     }
 
     .filter-chip.active, .filter-chip:hover {
@@ -147,60 +148,53 @@
     .segment-list {
       flex: 1;
       overflow-y: auto;
-      padding: 12px 16px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
-    .segment-list::-webkit-scrollbar {
-      width: 6px;
-    }
-    .segment-list::-webkit-scrollbar-thumb {
-      background: var(--border-color);
-      border-radius: 3px;
-    }
+    .segment-list::-webkit-scrollbar { width: 5px; }
+    .segment-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
 
     .module-group-title {
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 700;
       color: var(--accent-blue);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      padding: 10px 4px 4px;
+      padding: 10px 4px 2px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .segment-card {
       background-color: var(--bg-card);
       border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: 8px;
-      padding: 12px 14px;
+      padding: 10px 12px;
       cursor: pointer;
-      transition: all 0.2s ease;
-      position: relative;
+      transition: all 0.15s ease;
     }
 
     .segment-card:hover {
       background-color: var(--bg-card-hover);
       border-color: var(--accent-blue);
-      transform: translateY(-1px);
     }
 
     .segment-card.active {
-      background: linear-gradient(135deg, rgba(2, 132, 199, 0.35), rgba(15, 23, 42, 0.8));
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.4), rgba(30, 41, 59, 0.9));
       border: 1px solid var(--accent-blue);
-      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2);
     }
 
     .card-top {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 6px;
+      gap: 6px;
+      margin-bottom: 4px;
     }
 
     .card-num {
@@ -208,66 +202,70 @@
       font-size: 11px;
       font-weight: 700;
       color: var(--accent-blue);
-      background: rgba(56, 189, 248, 0.12);
-      padding: 2px 6px;
-      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.15);
+      padding: 1px 5px;
+      border-radius: 3px;
     }
 
     .card-title {
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 700;
       color: #fff;
       flex: 1;
-      line-height: 1.4;
+      line-height: 1.35;
     }
 
     .card-time {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
+      font-size: 10.5px;
       color: var(--accent-gold);
-      background: rgba(245, 158, 11, 0.12);
-      padding: 2px 7px;
-      border-radius: 4px;
+      background: rgba(245, 158, 11, 0.15);
+      padding: 1px 6px;
+      border-radius: 3px;
       white-space: nowrap;
     }
 
     .card-desc {
-      font-size: 12px;
+      font-size: 11.5px;
       color: var(--text-sub);
-      line-height: 1.5;
-      margin-bottom: 6px;
+      line-height: 1.45;
+      margin-bottom: 5px;
     }
 
     .card-quote {
-      font-size: 11.5px;
+      font-size: 11px;
       color: #cbd5e1;
       font-style: italic;
-      background: rgba(0, 0, 0, 0.25);
-      padding: 5px 8px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px 7px;
       border-left: 3px solid var(--accent-gold);
-      border-radius: 0 4px 4px 0;
-      line-height: 1.4;
+      border-radius: 0 3px 3px 0;
+      line-height: 1.35;
     }
 
-    /* Right Player Area */
+    /* Right Player & Notes */
     .player-area {
       flex: 1;
       display: flex;
       flex-direction: column;
-      background-color: #0b1120;
+      background-color: var(--bg-main);
       overflow-y: auto;
-      padding: 16px 24px;
-      gap: 16px;
+      padding: 16px 20px;
+      gap: 14px;
+    }
+
+    .video-sticky-container {
+      width: 100%;
     }
 
     .video-wrapper {
       position: relative;
       width: 100%;
-      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+      padding-top: 56.25%; /* 16:9 */
       background-color: #000;
-      border-radius: 12px;
+      border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
       border: 1px solid var(--border-color);
     }
 
@@ -280,36 +278,37 @@
       border: none;
     }
 
-    /* Status Bar below player */
+    /* Status Bar */
     .player-status-bar {
       background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 12px 18px;
+      border-radius: 8px;
+      padding: 10px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 12px;
     }
 
     .status-left {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 2px;
+      overflow: hidden;
     }
 
     .status-badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      font-size: 12px;
+      gap: 5px;
+      font-size: 11px;
       font-weight: 700;
       color: var(--accent-green);
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background-color: var(--accent-green);
       animation: pulse 1.5s infinite;
@@ -322,62 +321,59 @@
     }
 
     .current-playing-title {
-      font-size: 15px;
+      font-size: 13.5px;
       font-weight: 700;
       color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .status-right {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
+      flex-shrink: 0;
     }
 
     .time-tracker {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
+      font-size: 12px;
       color: var(--accent-blue);
       background: rgba(56, 189, 248, 0.1);
-      padding: 6px 12px;
-      border-radius: 6px;
-      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 4px 8px;
+      border-radius: 5px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
     }
 
     .btn-action {
       background-color: var(--accent-blue-hover);
       color: #fff;
       border: none;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
-      padding: 7px 16px;
-      border-radius: 6px;
+      padding: 6px 12px;
+      border-radius: 5px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       transition: all 0.2s;
     }
 
-    .btn-action:hover {
-      background-color: var(--accent-blue);
-    }
+    .btn-action:hover { background-color: var(--accent-blue); }
+    .btn-replay { background-color: #475569; }
+    .btn-replay:hover { background-color: #64748b; }
 
-    .btn-replay {
-      background-color: #475569;
-    }
-    .btn-replay:hover {
-      background-color: #64748b;
-    }
-
-    /* Teaching Keynote Cards under Player */
+    /* Notes Card */
     .teaching-notes-card {
       background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 18px 20px;
+      border-radius: 8px;
+      padding: 14px 16px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
     .notes-header {
@@ -385,41 +381,148 @@
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 10px;
+      padding-bottom: 8px;
     }
 
     .notes-header h3 {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--accent-blue);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
     .notes-content {
-      font-size: 13.5px;
-      line-height: 1.7;
+      font-size: 13px;
+      line-height: 1.6;
       color: #e2e8f0;
     }
 
     .notes-bullets {
-      margin-left: 18px;
-      margin-top: 6px;
+      margin-left: 16px;
+      margin-top: 5px;
     }
 
     .notes-bullets li {
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .quote-box {
       background: rgba(245, 158, 11, 0.08);
-      border-left: 4px solid var(--accent-gold);
-      padding: 10px 14px;
-      border-radius: 0 6px 6px 0;
-      font-size: 13px;
+      border-left: 3px solid var(--accent-gold);
+      padding: 8px 12px;
+      border-radius: 0 5px 5px 0;
+      font-size: 12.5px;
       color: #fed7aa;
       font-style: italic;
+      line-height: 1.4;
+    }
+
+    /* ==============================================================
+       MOBILE RESPONSIVE BREAKPOINT (Screen Width <= 900px)
+       手機直立最佳化排版：頂部影片固定 (Sticky) + 下方流暢滑動重點清單
+       ============================================================== */
+    @media (max-width: 900px) {
+      body {
+        overflow-y: auto;
+        height: auto;
+      }
+
+      .title-box p {
+        display: none;
+      }
+
+      /* Stack vertically */
+      .app-body {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        overflow: visible;
+      }
+
+      /* 1. Make Player Area First & Sticky at top */
+      .player-area {
+        order: 1;
+        padding: 0;
+        gap: 0;
+        background-color: var(--bg-main);
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8);
+      }
+
+      .video-wrapper {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+      }
+
+      .player-status-bar {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        padding: 8px 12px;
+        background-color: #131d31;
+      }
+
+      .current-playing-title {
+        font-size: 12.5px;
+        max-width: 180px;
+      }
+
+      .btn-action {
+        padding: 5px 8px;
+        font-size: 11px;
+      }
+
+      .time-tracker {
+        font-size: 11px;
+        padding: 3px 6px;
+      }
+
+      /* Hide Desktop Notes card under player in mobile, moved inside active segment or list */
+      .teaching-notes-card {
+        margin: 10px 12px 6px;
+        border-radius: 8px;
+        padding: 12px;
+      }
+
+      /* 2. Make Sidebar Second (Natural scrollable list) */
+      .sidebar {
+        order: 2;
+        width: 100%;
+        height: auto;
+        border-right: none;
+        overflow: visible;
+        background-color: var(--bg-main);
+      }
+
+      .filter-bar {
+        position: -webkit-sticky;
+        position: sticky;
+        top: calc(56.25vw + 49px); /* Below sticky video + status bar */
+        z-index: 40;
+        background-color: var(--bg-panel);
+        padding: 8px 12px;
+      }
+
+      .segment-list {
+        overflow: visible;
+        padding: 10px 12px 30px;
+      }
+
+      .segment-card {
+        padding: 12px;
+        margin-bottom: 4px;
+      }
+
+      .card-title {
+        font-size: 13.5px;
+      }
     }
   </style>
 </head>
@@ -428,23 +531,20 @@
   <!-- Header -->
   <header>
     <div class="brand">
-      <span class="badge-tag">2026 最新手法</span>
+      <span class="badge-tag">2026 改良</span>
       <div class="title-box">
-        <h1>張醫師原始點臀部按推重大改良 — 互動教學播放器</h1>
-        <p>精選 15 組精準片段 | 點選即播 | 到達秒數自動停止定格 | 零相容性問題</p>
+        <h1>張醫師臀部手法改良教學</h1>
+        <p>點選即播 | 播完定格停止 | 手機直式自適應</p>
       </div>
     </div>
     <div class="header-actions">
-      <button class="btn-help" onclick="toggleAutoNext()">⚡ 自動連續播放：<span id="autoNextLabel">關閉 (定格停止)</span></button>
-      <a href="https://www.youtube.com/watch?v=jNKgLlgoJ7w" target="_blank" class="btn-help" style="text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
-        ↗ 開啟 YouTube 原影片
-      </a>
+      <button class="btn-toggle-auto" onclick="toggleAutoNext()">⚡ 自動連續：<span id="autoNextLabel">關閉</span></button>
     </div>
   </header>
 
   <!-- App Body -->
   <div class="app-body">
-    <!-- Left Playlist Sidebar -->
+    <!-- Left / Bottom on Mobile: Playlist Sidebar -->
     <div class="sidebar">
       <div class="filter-bar">
         <div class="filter-chip active" onclick="filterSegments('all', this)">全部重點 (15)</div>
@@ -460,27 +560,29 @@
       </div>
     </div>
 
-    <!-- Right Player & Teaching Notes -->
+    <!-- Right / Top on Mobile: Sticky Player & Teaching Notes -->
     <div class="player-area">
       <!-- YouTube Embed IFrame Wrapper -->
-      <div class="video-wrapper">
-        <div id="player"></div>
-      </div>
-
-      <!-- Live Status & Play Controls -->
-      <div class="player-status-bar">
-        <div class="status-left">
-          <div class="status-badge">
-            <span class="status-dot" id="statusDot"></span>
-            <span id="statusText">已就緒 (點擊左側列表任一重點即刻播放)</span>
-          </div>
-          <div class="current-playing-title" id="currentTitle">請選擇左側重點段落開始教學</div>
+      <div class="video-sticky-container">
+        <div class="video-wrapper">
+          <div id="player"></div>
         </div>
 
-        <div class="status-right">
-          <div class="time-tracker" id="timeTracker">00:00 / 00:00</div>
-          <button class="btn-action btn-replay" onclick="replayCurrentSegment()">↺ 重播此段</button>
-          <button class="btn-action" onclick="togglePlayPause()" id="playPauseBtn">❚❚ 暫停</button>
+        <!-- Live Status & Play Controls -->
+        <div class="player-status-bar">
+          <div class="status-left">
+            <div class="status-badge">
+              <span class="status-dot" id="statusDot"></span>
+              <span id="statusText">已就緒</span>
+            </div>
+            <div class="current-playing-title" id="currentTitle">請點選下方重點段落開始播放</div>
+          </div>
+
+          <div class="status-right">
+            <div class="time-tracker" id="timeTracker">00:00 / 00:00</div>
+            <button class="btn-action btn-replay" onclick="replayCurrentSegment()">↺ 重播</button>
+            <button class="btn-action" onclick="togglePlayPause()" id="playPauseBtn">❚❚ 暫停</button>
+          </div>
         </div>
       </div>
 
@@ -488,13 +590,13 @@
       <div class="teaching-notes-card" id="notesCard">
         <div class="notes-header">
           <h3 id="notesHeaderTitle">📌 本段核心操作要點解析</h3>
-          <span style="font-size:12px; color:var(--text-sub);" id="notesModuleTag">模組標籤</span>
+          <span style="font-size:11px; color:var(--text-sub);" id="notesModuleTag">模組標籤</span>
         </div>
         <div class="notes-content" id="notesContent">
-          點選左側的手法清單，此處將同步呈現張醫師於該段落指導的骨骼架構、手部放鬆、下盤沉降細節與臨床口訣。
+          點選列表任一手法，此處同步呈現張醫師現場指導的身法細節與口訣。
         </div>
         <div class="quote-box" id="notesQuote">
-          💡 張醫師原音口訣：點選左側手法查看精華摘要。
+          💡 張醫師原音要領：點選手法查看精華摘要。
         </div>
       </div>
     </div>
@@ -503,22 +605,20 @@
   <!-- YouTube IFrame API -->
   <script src="https://www.youtube.com/iframe_api"></script>
   <script>
-    // 15 Segments Dataset
     const segments = [
-      // Module 1
       {
         id: 1,
         module: 'm1',
         moduleName: '一、臀部手法重大改良重點',
         title: '下臀 V 字延伸點：改旋轉式手法 (開場理念)',
-        start: 56,      // 00:00:56
-        end: 73,        // 00:01:13
+        start: 56,
+        end: 73,
         timeLabel: '00:00:56 - 00:01:13',
         desc: '比照肩部改良原則，改為緊貼骨面旋轉（轉圈式），大幅降低以往延伸點的尖銳刺激感與壓迫感。',
         quote: '「這次臀部最大的改良就是下臀部 V 字延伸改旋轉式手法，就像肩部的改良一樣，減少尖銳刺激和壓迫感，感覺更容易接受、更舒服。」',
         notes: [
           '顛覆傳統手肘硬推方式，改採貼緊骨面的圓周旋轉式運動。',
-          '臨床價值：受按者肌肉不易因尖銳刺痛而緊繃防禦，放鬆度提高 80% 以上。'
+          '臨床價值：受按者不易因尖銳刺痛而緊繃防禦，放鬆度提高 80% 以上。'
         ]
       },
       {
@@ -526,8 +626,8 @@
         module: 'm1',
         moduleName: '一、臀部手法重大改良重點',
         title: '下臀 V 字延伸點：現場貼骨轉圈示範',
-        start: 2539,    // 00:42:19
-        end: 2553,      // 00:42:33
+        start: 2539,
+        end: 2553,
         timeLabel: '00:42:19 - 00:42:33',
         desc: '張醫師親自操作下臀部，展示手肘緊貼骨面、以適度弧度劃圓的實際動態。',
         quote: '「我現在不用這樣按，這樣太刺激了！所以這裡延伸點用旋轉的貼著，一樣轉...」',
@@ -541,14 +641,14 @@
         module: 'm1',
         moduleName: '一、臀部手法重大改良重點',
         title: '簡化體位轉換：單一固定姿勢免翻身',
-        start: 2553,    // 00:42:33
-        end: 2563,      // 00:42:43
+        start: 2553,
+        end: 2563,
         timeLabel: '00:42:33 - 00:42:43',
         desc: '操作者維持單一固定姿勢即可操作全區，不再需要讓受按者來回變換趴姿。',
         quote: '「以後就一個姿勢，也不用再怎麼趴這樣換來換去都不用，它直接...」',
         notes: [
-          '傳統施作延伸點常需調整受按者腿部或骨盆夾角，造成體傷者翻動困難。',
-          '改旋轉式後，單一角度即可涵蓋完整延伸點，節省臨床施作者大量體力。'
+          '傳統施作延伸點常需調整受按者腿部夾角，造成體傷者翻動困難。',
+          '改旋轉式後，單一角度即可涵蓋完整延伸點，節省臨床大量體力。'
         ]
       },
       {
@@ -556,8 +656,8 @@
         module: 'm1',
         moduleName: '一、臀部手法重大改良重點',
         title: '嚴格區分「按」與「壓」：下盤決定勝負',
-        start: 183,     // 00:03:03
-        end: 217,       // 00:03:37
+        start: 183,
+        end: 217,
         timeLabel: '00:03:03 - 00:03:37',
         desc: '按是身體放鬆、由下盤下沉將工具垂直帶入深層組織產生透力；凡手臂發力皆屬蠻力與壓。',
         quote: '「什麼叫按？按原來是從下盤就開始決定你的勝負！腳沒有站好，你根本不叫按！」',
@@ -571,25 +671,23 @@
         module: 'm1',
         moduleName: '一、臀部手法重大改良重點',
         title: '先垂直按到位，身體鎖定再均勻「推」',
-        start: 257,     // 00:04:17
-        end: 306,       // 00:05:06
+        start: 257,
+        end: 306,
         timeLabel: '00:04:17 - 00:05:06',
         desc: '動作嚴格分階：必須先垂直「按」透到位、身體深度固定不浮起，隨後手部完全放鬆僅作前後均勻推動。',
-        quote: '「我推有沒有力量？很紮實！但是我手完全沒有用力，我手只是讓手來回而已，推只有速度與幅度！」',
+        quote: '「我推有沒有力量？很紮實！但我手完全沒有用力，手只是讓手來回而已，推只有速度與幅度！」',
         notes: [
           '按推不可同時混雜進行，否則必定淪為表皮搓磨。',
           '下沉深度固定後，手腕與手臂極度放鬆，純順著組織慣性前後擺動。'
         ]
       },
-
-      // Module 2
       {
         id: 6,
         module: 'm2',
         moduleName: '二、臀部點位分布與操作架構',
         title: 'V 字型臀部原始點：推薦坐姿 (臀橫紋對臀橫紋)',
-        start: 2611,    // 00:43:31
-        end: 2624,      // 00:43:44
+        start: 2611,
+        end: 2624,
         timeLabel: '00:43:31 - 00:43:44',
         desc: '床鋪高度適當時強烈推薦採坐姿，操作者與受按者以「臀橫紋對臀橫紋」就坐定位，一手扶穩身體。',
         quote: '「V 字型屁股如果我的高度我建議坐姿啊，臀橫紋對臀橫紋，一手扶著維持穩定。」',
@@ -603,8 +701,8 @@
         module: 'm2',
         moduleName: '二、臀部點位分布與操作架構',
         title: '第一點手肘 90 度校正：靠身體非靠手臂硬扳',
-        start: 2630,    // 00:43:50
-        end: 2667,      // 00:44:27
+        start: 2630,
+        end: 2667,
         timeLabel: '00:43:50 - 00:44:27',
         desc: '接觸初期手肘常大於 90 度，切忌用手臂去扳；應藉操作者身體微抬起並靠過來，將手肘校正為嚴格 90 度垂直骨面。',
         quote: '「這大於 90 度跟枕骨一樣，怎麼把它調整到剛好 90 度？身體起來靠過來！是 90 度了，力量才大、才透！」',
@@ -618,8 +716,8 @@
         module: 'm2',
         moduleName: '二、臀部點位分布與操作架構',
         title: '下臀延伸點：骨面廣大特性與涵蓋原則',
-        start: 2563,    // 00:42:43
-        end: 2577,      // 00:42:57
+        start: 2563,
+        end: 2577,
         timeLabel: '00:42:43 - 00:42:57',
         desc: '該處骨骼面積廣大，操作時只要手肘貼緊即可涵蓋勾到，不需刻意摸索或執著於人為設定的骨邊線。',
         quote: '「因為它面積太大，你只要貼了就已經都到了，也不用再去摸索那一條線，那一條線是人為的想像，不用管它！」',
@@ -633,8 +731,8 @@
         module: 'm2',
         moduleName: '二、臀部點位分布與操作架構',
         title: '旋轉手法適用條件：骨凸硬部 vs 凹陷處禁轉',
-        start: 2584,    // 00:43:04
-        end: 2611,      // 00:43:31
+        start: 2584,
+        end: 2611,
         timeLabel: '00:43:04 - 00:43:31',
         desc: '【可轉】骨頭凸出的硬骨區域貼著劃圓；【禁轉】上沿較軟處或組織凹陷轉不動處，回歸常規按推。',
         quote: '「上沿不行不能轉，這種凸出來的可以轉；但凹下去轉不動的部位就真的要回歸常規按推，反正只要按得到就好。」',
@@ -643,15 +741,13 @@
           '凹陷處改為「垂直下沉沉透 + 輕微前後推」即可。'
         ]
       },
-
-      // Module 3
       {
         id: 10,
         module: 'm3',
         moduleName: '三、步法與身法要求',
         title: '弓箭步關鍵：前腿半蹲、後腳胯骨完全轉正',
-        start: 545,     // 00:09:05
-        end: 591,       // 00:09:51
+        start: 545,
+        end: 591,
         timeLabel: '00:09:05 - 00:09:51',
         desc: '前腳微屈半蹲支撐，後腿切忌打得過直或僵硬；關鍵在於將整個胯骨（臀部）完全轉向正前方順勢靠攏。',
         quote: '「後腳一定要把整個胯轉到正前方，身體再靠過來力量才最大！屁股斜斜沒轉，力道不能充分應用！」',
@@ -665,8 +761,8 @@
         module: 'm3',
         moduleName: '三、步法與身法要求',
         title: '身手一體與重心失衡原理：快倒在支撐點上',
-        start: 697,     // 00:11:37
-        end: 755,       // 00:12:35
+        start: 697,
+        end: 755,
         timeLabel: '00:11:37 - 00:12:35',
         desc: '原始點設計原理是讓身體處於失去平衡臨界狀態，將快跌倒的體重自然落在支撐點工具上，而非主動蠻力硬壓。',
         quote: '「原始點設計是採取讓身體失去平衡、快倒下的那刻倒在你的支撐點上！如果沒有這個點，整個人會垮下來。」',
@@ -675,15 +771,13 @@
           '抽掉受按部位人會失去重心，這才證明真正做到了「透」。'
         ]
       },
-
-      // Module 4
       {
         id: 12,
         module: 'm4',
         moduleName: '四、動作分解慢動作要領',
         title: '下盤沉降深度調控：兩層下沉直達極限',
-        start: 3124,    // 00:52:04
-        end: 3154,      // 00:52:34
+        start: 3124,
+        end: 3154,
         timeLabel: '00:52:04 - 00:52:34',
         desc: '深層體傷可分兩層進入——第一層下沉到底後手依然不出力，下盤再做第二層下沉，直達原始點極限深度。',
         quote: '「我可以分兩層，第一層到底後，身體再做第二層下沉，手依然不出力，這就很深了！這個就是極限。」',
@@ -697,8 +791,8 @@
         module: 'm4',
         moduleName: '四、動作分解慢動作要領',
         title: '推的本質：深度鎖定不浮起，純控幅度速度',
-        start: 1475,    // 00:24:35
-        end: 1512,      // 00:25:12
+        start: 1475,
+        end: 1512,
         timeLabel: '00:24:35 - 00:25:12',
         desc: '按到位後身體深度嚴格鎖定不浮起，手臂完全放鬆進行前後均勻推動，絕不在皮肉表面使勁搓磨。',
         quote: '「下去身體就不起來了，代表力量都在深層！推回來的時侯手肘因骨面隆起自然微翹，但身體深度固定！」',
@@ -707,15 +801,13 @@
           '深度留在深處，手僅是前後慣性擺動。'
         ]
       },
-
-      // Module 5
       {
         id: 14,
         module: 'm5',
         moduleName: '五、臨床痛點診斷與施力原則',
         title: '對側同步探查：現場對側劇痛比同側更甚',
-        start: 2026,    // 00:33:46
-        end: 2077,      // 00:34:37
+        start: 2026,
+        end: 2077,
         timeLabel: '00:33:46 - 00:34:37',
         desc: '診斷腰臀痛點切忌只按同側！現場探查對側，結果對側出現更劇烈痛感且痛整條，印證對側體傷為根本。',
         quote: '「反而對側更痛對不對？我從這裡到這裡一條都在痛，而且痛的程度比同側痛很多，這在診斷上會差非常多！」',
@@ -729,8 +821,8 @@
         module: 'm5',
         moduleName: '五、臨床痛點診斷與施力原則',
         title: '痛感耐受與施力節奏：一次咬到底到位即放',
-        start: 2451,    // 00:40:51
-        end: 2496,      // 00:41:36
+        start: 2451,
+        end: 2496,
         timeLabel: '00:40:51 - 00:41:36',
         desc: '大聲呼痛代表熱能足，深透不傷肉；但不可在同一定點久按，一次揉透到底持續數秒到位即換點。',
         quote: '「患者大聲叫痛代表熱能足夠，我從不因喊痛而減輕；但深透不傷肉，感覺夠了就鬆，一次咬到底到位就換！」',
@@ -744,10 +836,9 @@
     let player = null;
     let currentSegment = null;
     let checkInterval = null;
-    let autoNext = false; // default: stop at end!
+    let autoNext = false;
     let isApiReady = false;
 
-    // Initialize YouTube Player
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('player', {
         height: '100%',
@@ -767,9 +858,8 @@
 
     function onPlayerReady(event) {
       isApiReady = true;
-      document.getElementById('statusText').innerText = '播放器已連線就緒，點擊任一卡片即可指定區間播放';
+      document.getElementById('statusText').innerText = '就緒 (點選即播)';
       renderSegmentList(segments);
-      // Select first segment by default but don't autoplay yet
       selectSegment(segments[0], false);
     }
 
@@ -780,7 +870,7 @@
       if (event.data === YT.PlayerState.PLAYING) {
         playPauseBtn.innerText = '❚❚ 暫停';
         statusDot.style.backgroundColor = 'var(--accent-green)';
-        document.getElementById('statusText').innerText = '正在播放指定教學區間...';
+        document.getElementById('statusText').innerText = '播放中';
         startStopMonitor();
       } else if (event.data === YT.PlayerState.PAUSED) {
         playPauseBtn.innerText = '▶ 播放';
@@ -793,16 +883,13 @@
       }
     }
 
-    // Monitor playback time and automatically STOP at segment.end
     function startStopMonitor() {
       clearInterval(checkInterval);
       checkInterval = setInterval(() => {
         if (!player || !player.getCurrentTime || !currentSegment) return;
-        
         const curr = player.getCurrentTime();
         updateTimeTracker(curr, currentSegment.end);
 
-        // Check if reached segment end
         if (curr >= currentSegment.end) {
           player.pauseVideo();
           clearInterval(checkInterval);
@@ -816,22 +903,10 @@
       statusDot.style.backgroundColor = 'var(--accent-red)';
       
       if (autoNext) {
-        document.getElementById('statusText').innerText = '本段結束，即將自動切換下一段...';
-        setTimeout(() => {
-          playNextSegment();
-        }, 1200);
+        document.getElementById('statusText').innerText = '即將播下一段...';
+        setTimeout(() => { playNextSegment(); }, 1200);
       } else {
-        document.getElementById('statusText').innerText = '🎯 已精準到達指定結束秒數，畫面已自動停止定格！';
-      }
-    }
-
-    function playSegment(seg) {
-      currentSegment = seg;
-      updateUIForSegment(seg);
-      
-      if (player && player.seekTo) {
-        player.seekTo(seg.start, true);
-        player.playVideo();
+        document.getElementById('statusText').innerText = '🎯 已定格停止';
       }
     }
 
@@ -842,28 +917,28 @@
       if (autoPlay && player && player.seekTo) {
         player.seekTo(seg.start, true);
         player.playVideo();
+        
+        // On mobile, scroll smoothly to the sticky player so user sees it start playing
+        if (window.innerWidth <= 900) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       }
     }
 
     function updateUIForSegment(seg) {
-      // Highlight card in playlist
       document.querySelectorAll('.segment-card').forEach(el => el.classList.remove('active'));
       const activeCard = document.getElementById(`seg-card-${seg.id}`);
       if (activeCard) {
         activeCard.classList.add('active');
-        activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
 
-      // Update current title & notes
       document.getElementById('currentTitle').innerText = `${seg.id}. ${seg.title}`;
       document.getElementById('notesHeaderTitle').innerText = `📌 ${seg.title}`;
       document.getElementById('notesModuleTag').innerText = seg.moduleName;
       document.getElementById('notesQuote').innerText = `💡 張醫師原音要領：${seg.quote}`;
       
-      let bulletHtml = `<p style="margin-bottom:8px;">${seg.desc}</p><ul class="notes-bullets">`;
-      seg.notes.forEach(n => {
-        bulletHtml += `<li>${n}</li>`;
-      });
+      let bulletHtml = `<p style="margin-bottom:6px;">${seg.desc}</p><ul class="notes-bullets">`;
+      seg.notes.forEach(n => { bulletHtml += `<li>${n}</li>`; });
       bulletHtml += '</ul>';
       document.getElementById('notesContent').innerHTML = bulletHtml;
 
@@ -900,10 +975,10 @@
       autoNext = !autoNext;
       const lbl = document.getElementById('autoNextLabel');
       if (autoNext) {
-        lbl.innerText = '開啟 (連續放映)';
+        lbl.innerText = '開啟';
         lbl.style.color = 'var(--accent-green)';
       } else {
-        lbl.innerText = '關閉 (播完定格停止)';
+        lbl.innerText = '關閉';
         lbl.style.color = 'var(--accent-gold)';
       }
     }
@@ -916,11 +991,9 @@
       }
     }
 
-    // Render Playlist
     function renderSegmentList(dataList) {
       const container = document.getElementById('segmentListContainer');
       container.innerHTML = '';
-      
       let lastModule = '';
 
       dataList.forEach(seg => {
@@ -951,7 +1024,6 @@
       });
     }
 
-    // Filter by module
     function filterSegments(modKey, chipEl) {
       document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
       chipEl.classList.add('active');
